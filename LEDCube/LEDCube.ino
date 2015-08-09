@@ -1,10 +1,10 @@
 /*
  * LED CUBE, Joakim Andersson 2015
- * 
- * Built with 8 TPICB595 shift registers, a 74hc238 demultiplexer for layer select, 
+ *
+ * Built with 8 TPICB595 shift registers, a 74hc238 demultiplexer for layer select,
  * paired with 8 NPN transistors driving 8 PNP driver transistor for each layer.
  * Driven by an Arduino Nano.
- * 
+ *
  */
 
 //shift registers
@@ -18,9 +18,11 @@
 #define a1Pin 5 // A1
 #define a2Pin 6 // A2
 
-uint8_t pixelData[8][8] ; //total 512 bits of data
+uint8_t pixelData[8][8]; //total 512 bits of data
 
 #define frameDelay 15
+
+int pos = 0;
 
 void setup() {
 
@@ -40,22 +42,60 @@ void setup() {
   digitalWrite(pwmPin, HIGH); //no PWM just yet
 
   clearData();
+  testSequence();
 }
 
 void loop() {
-  drawCube();
-  testSequence();
+  /*
+    if (Serial.available() >= 32)
+    {
+      //pixelData[0][0] = 1;
+      for (int pos = 0; pos < 32; ++pos)
+      {
+        int realPos = pos + 32 * upper;
+        pixelData[realPos / 8][realPos % 8] = Serial.read();
+      }
+      upper = 1 - upper;
 
+    }
+
+  if (Serial.available() > 0)
+  {
+    int pos = 0;
+    while (pos < 64)
+    {
+      if (Serial.available() > 0)
+      {
+        pixelData[pos / 8][pos % 8] = Serial.read();
+        ++pos;
+      }
+      else
+      {
+        //drawCube();
+      }
+    }
+  }
+  */
+  drawCube();
 }
 
 
+void parseSerial()
+{
+  if (Serial.available() > 0)
+  {
+    pixelData[pos / 8][pos % 8] = Serial.read();
+    pos = (pos + 1) % 64;
+  }
+}
+
 void testSequence()
 {
-  //fillCube();
-  //swipeUp();
-  //swipeSide();
-  //randomPixel();
-  sinWave();
+  fillCube();
+  /*swipeUp();
+  swipeSide();
+  randomPixel();
+  sinWave();*/
 }
 
 // "renders" cube
@@ -64,12 +104,14 @@ void drawCube()
   //z - up, y - in, x - right
   for (int zLayer = 0; zLayer < 8; ++zLayer)
   {
+    //parseSerial();
     // drive latch low while transmitting
     //digitalWrite(latchPinne, LOW);
     PORTB = 0 | (PORTB & B11111110); // faster way to drive latch pin low
 
     for (int yLayer = 0; yLayer < 8; ++yLayer)
     {
+      parseSerial(); // had to do this more often
       shiftOut(dataPinne, clockPinne, MSBFIRST, pixelData[zLayer][yLayer]); // shift out x
     }
     PORTB = 1 | (PORTB & B11111110); // latch pin pin
@@ -79,6 +121,7 @@ void drawCube()
     PORTD = (zLayer << 4) | (PORTD & B10001111); //select what layer to show, outputs are matched to demultiplexer.
     //PORTD = (1 << pwmPin) | (PORTD & B11110111); // pwm pin
   }
+  
   //clear
   for (int yLayer = 0; yLayer < 8; ++yLayer)
   {
@@ -86,6 +129,7 @@ void drawCube()
   }
   PORTB = 0 | (PORTB & B11111110); // latch pin pin
   PORTB = 1 | (PORTB & B11111110); // latch pin pin
+
 }
 
 // fills whole cube
@@ -158,11 +202,10 @@ void sinWave()
         float rad = (i * 45 + outer) / 360.0f * PI;
         int sVal = sin(rad) * 4;
         pixelData[4 + sVal][i] = 255;
-
       }
       drawCube();
     }
-    
+
     clearData();
   }
   clearData();
