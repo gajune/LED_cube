@@ -48,6 +48,12 @@ class PyControllerMain(object):
 	def clearAllPixel(self):
 		self.pixelData = [0 for x in self.pixelData]
 
+	def drawLine(self, fromX, fromY, fromZ, toX, toY, toZ):
+		for x in range(fromX, toX + 1):
+			for y in range(fromY, toY + 1):
+				for z in range(fromZ, toZ + 1):
+					self.setPixelOn(x, y, z)
+
 if __name__ == '__main__':
 	controller = PyControllerMain()
 	controller.setup()
