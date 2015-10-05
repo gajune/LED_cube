@@ -19,3 +19,4 @@ class SinWave(pyControllerMain.PyControllerMain):
 if __name__ == '__main__':
 	sinWave = SinWave()
 	sinWave.setup()
+	controller.mainLoop()

@@ -44,20 +44,20 @@ class TextRenderer(pyControllerMain.PyControllerMain):
 			index = (int(z) << 3) + 7
 
 			#front side
-			self.pixelData[index] = (((self.font[ord(self.text[pos])][7 - z] << 8) >> int(charPos)) | 
-									((self.font[ord(self.text[posRight])][7 - z] << 16) >> int(charPos)) | 
+			self.pixelData[index] = (((self.font[ord(self.text[pos])][7 - z] << 8) >> int(charPos)) |
+									((self.font[ord(self.text[posRight])][7 - z] << 16) >> int(charPos)) |
 									((self.font[ord(self.text[posLeft])][7 - z] << 0) >> int(charPos))
 									) & 0xFF
 
 			#right side
-			displayRight = (((self.font[ord(self.text[posRight])][7 - z] << 8) >> int(charPos)) | 
-									((self.font[ord(self.text[posRightMost])][7 - z] << 16) >> int(charPos)) | 
+			displayRight = (((self.font[ord(self.text[posRight])][7 - z] << 8) >> int(charPos)) |
+									((self.font[ord(self.text[posRightMost])][7 - z] << 16) >> int(charPos)) |
 									((self.font[ord(self.text[pos])][7 - z] << 0) >> int(charPos))
 									) & 0xFF
 
 			#left side
-			displayLeft = (((self.font[ord(self.text[posLeft])][7 - z] << 8) >> int(charPos)) | 
-									((self.font[ord(self.text[pos])][7 - z] << 16) >> int(charPos)) | 
+			displayLeft = (((self.font[ord(self.text[posLeft])][7 - z] << 8) >> int(charPos)) |
+									((self.font[ord(self.text[pos])][7 - z] << 16) >> int(charPos)) |
 									((self.font[ord(self.text[posLeftMost])][7 - z] << 0) >> int(charPos))
 									) & 0xFF
 
@@ -71,3 +71,4 @@ class TextRenderer(pyControllerMain.PyControllerMain):
 if __name__ == '__main__':
 	text = TextRenderer()
 	text.setup()
+	controller.mainLoop()

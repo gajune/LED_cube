@@ -33,3 +33,4 @@ class CubeAnimation(pyControllerMain.PyControllerMain):
 if __name__ == '__main__':
 	cube = CubeAnimation()
 	cube.setup()
+	controller.mainLoop()
