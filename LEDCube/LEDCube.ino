@@ -22,7 +22,11 @@ uint8_t pixelData[8][8]; //total 512 bits of data
 
 #define frameDelay 15
 
+#define START_BYTE 0xAA
+
 int pos = 0;
+
+bool startByteFound = false;
 
 void setup() {
 
@@ -42,41 +46,13 @@ void setup() {
   digitalWrite(pwmPin, HIGH); //no PWM just yet
 
   clearData();
+  fillCube();
   testSequence();
 }
 
 void loop() {
-  /*
-    if (Serial.available() >= 32)
-    {
-      //pixelData[0][0] = 1;
-      for (int pos = 0; pos < 32; ++pos)
-      {
-        int realPos = pos + 32 * upper;
-        pixelData[realPos / 8][realPos % 8] = Serial.read();
-      }
-      upper = 1 - upper;
-
-    }
-
-  if (Serial.available() > 0)
-  {
-    int pos = 0;
-    while (pos < 64)
-    {
-      if (Serial.available() > 0)
-      {
-        pixelData[pos / 8][pos % 8] = Serial.read();
-        ++pos;
-      }
-      else
-      {
-        //drawCube();
-      }
-    }
-  }
-  */
-  drawCube();
+  testSequence();
+  //drawCube();
 }
 
 
@@ -84,18 +60,32 @@ void parseSerial()
 {
   if (Serial.available() > 0)
   {
-    pixelData[pos / 8][pos % 8] = Serial.read();
-    pos = (pos + 1) % 64;
+    byte inByte = Serial.read();
+    if (startByteFound) 
+    {
+      pixelData[pos / 8][pos % 8] = inByte;
+      pos++;
+      if (64 == pos)
+      {
+        startByteFound = false;
+        pos = 0;
+      }
+    }
+    else if (inByte == START_BYTE)
+    {
+      startByteFound = true;
+    }
   }
 }
 
 void testSequence()
 {
-  fillCube();
-  /*swipeUp();
-  swipeSide();
-  randomPixel();
-  sinWave();*/
+  rain();
+  //fillCube();
+  //swipeUp();
+  //swipeSide();
+  //randomPixel();
+  //sinWave();
 }
 
 // "renders" cube
@@ -130,85 +120,6 @@ void drawCube()
   PORTB = 0 | (PORTB & B11111110); // latch pin pin
   PORTB = 1 | (PORTB & B11111110); // latch pin pin
 
-}
-
-// fills whole cube
-void fillCube()
-{
-  for (int layer = 0; layer < 8; ++layer)
-  {
-    for (int i = 0; i < 8; ++i)
-    {
-      pixelData[layer][i] = 255;
-    }
-  }
-  wait(150);
-  clearData();
-}
-
-//plane swiping up
-void swipeUp()
-{
-  for (int layer = 0; layer < 8; ++layer)
-  {
-    for (int i = 0; i < 8; ++i)
-    {
-      pixelData[layer][i] = 255;
-      pixelData[(layer - 1) % 8][i] = 0;
-
-    }
-    wait(frameDelay);
-  }
-  clearLayer(7);
-}
-
-//plane swiping right
-void swipeSide()
-{
-  for (int outer = 0; outer < 8; ++outer)
-  {
-    for (int layer = 0; layer < 8; ++layer)
-    {
-      for (int i = 0; i < 8; ++i)
-      {
-        pixelData[layer][i] = 1 << outer;
-      }
-    }
-    wait(frameDelay);
-  }
-  clearData();
-}
-
-//displays random pixels
-void randomPixel()
-{
-  for (int i = 0; i < 50; ++i)
-  {
-    pixelData[random(8)][random(8)] = 1 << random(8);
-    wait(frameDelay);
-  }
-  clearData();
-}
-
-//wave
-void sinWave()
-{
-  for (int outer = 0; outer < 2880; outer += 60)
-  {
-    for (int layer = 0; layer < 8; ++layer)
-    {
-      for (int i = 0; i < 8; ++i)
-      {
-        float rad = (i * 45 + outer) / 360.0f * PI;
-        int sVal = sin(rad) * 4;
-        pixelData[4 + sVal][i] = 255;
-      }
-      drawCube();
-    }
-
-    clearData();
-  }
-  clearData();
 }
 
 //crude wait function, displays current data

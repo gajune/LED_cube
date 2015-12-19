@@ -4,6 +4,11 @@ import threading
 import time
 import struct
 
+START_SEQUENCE = bytearray(1)
+START_SEQUENCE[0] = 170 #AA
+#START_SEQUENCE[1] = 33
+#START_SEQUENCE[2] = 37
+
 #main class for interfacing with the cube
 class PyControllerMain(object):
 	def __init__(self):
@@ -20,7 +25,7 @@ class PyControllerMain(object):
 		else:
 			print ("USAGE: 'python pyController.py PORT BAUDRATE'")
 			print ("Using default values: " + port + ", " + str(baud))
-		self.arduino = serial.Serial(port, baud, timeout=0)
+		self.arduino = serial.Serial(port, baud, timeout=0, xonxoff=False, rtscts=False, dsrdtr=False)
 		time.sleep(3.5)
 
 	def mainLoop(self):
@@ -33,7 +38,9 @@ class PyControllerMain(object):
 		print ("NOT IMPLEMENTED")
 
 	def draw(self):
+		self.arduino.write(START_SEQUENCE)
 		self.arduino.write(self.pixelData)
+		self.arduino.flush()
 
 	#x from left to right, y from front to back, z from bottom to top
 	def setPixelOn(self, x, y, z):

@@ -71,4 +71,4 @@ class TextRenderer(pyControllerMain.PyControllerMain):
 if __name__ == '__main__':
 	text = TextRenderer()
 	text.setup()
-	controller.mainLoop()
+	text.mainLoop()

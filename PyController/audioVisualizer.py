@@ -48,4 +48,4 @@ class AudioVisualizer(pyControllerMain.PyControllerMain):
 if __name__ == '__main__':
 	audio = AudioVisualizer()
 	audio.setup()
-	controller.mainLoop()
+	audio.mainLoop()

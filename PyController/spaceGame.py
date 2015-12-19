@@ -36,23 +36,21 @@ class SpaceGame(pyControllerMain.PyControllerMain):
 
 	def update(self):
 		#print ("updating")
-		#TODO move back to player object, send event instead
-		for event in pygame.event.get():
-			if event.type == pygame.KEYDOWN:
-				if (event.key == pygame.K_w):
-					self.player.move(0, 1, 0)
-				elif (event.key == pygame.K_s):
-					self.player.move(0, -1, 0)
+		keys = pygame.key.get_pressed()
+		if (keys[pygame.K_w]):
+			self.player.move(0, 1, 0)
+		elif (keys[pygame.K_s]):
+			self.player.move(0, -1, 0)
 
-				if (event.key == pygame.K_d):
-					self.player.move(1, 0, 0)
-				elif (event.key == pygame.K_a):
-					self.player.move(-1, 0, 0)
+		if (keys[pygame.K_d]):
+			self.player.move(1, 0, 0)
+		elif (keys[pygame.K_a]):
+			self.player.move(-1, 0, 0)
 
-				if (event.key == pygame.K_UP):
-					self.player.move(0, 0, 1)
-				elif (event.key == pygame.K_DOWN):
-					self.player.move(0, 0, -1)
+		if (keys[pygame.K_UP]):
+			self.player.move(0, 0, 1)
+		elif (keys[pygame.K_DOWN]):
+			self.player.move(0, 0, -1)
 
 			if event.type == pygame.QUIT:
 				print ("QUITTING")
