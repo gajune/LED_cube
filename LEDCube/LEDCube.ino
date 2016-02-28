@@ -91,28 +91,8 @@ void testSequence()
 // "renders" cube
 void drawCube()
 {
-  //z - up, y - in, x - right
-  for (int zLayer = 0; zLayer < 8; ++zLayer)
-  {
-    //parseSerial();
-    // drive latch low while transmitting
-    //digitalWrite(latchPinne, LOW);
-    PORTB = 0 | (PORTB & B11111110); // faster way to drive latch pin low
-
-    for (int yLayer = 0; yLayer < 8; ++yLayer)
-    {
-      parseSerial(); // had to do this more often
-      shiftOut(dataPinne, clockPinne, MSBFIRST, pixelData[zLayer][yLayer]); // shift out x
-    }
-    PORTB = 1 | (PORTB & B11111110); // latch pin pin
-
-    //select layer to show
-    //PORTD = 0 | (PORTD & B11110111); // pwm pin
-    PORTD = (zLayer << 4) | (PORTD & B10001111); //select what layer to show, outputs are matched to demultiplexer.
-    //PORTD = (1 << pwmPin) | (PORTD & B11110111); // pwm pin
-  }
-  
   //clear
+  /*
   for (int yLayer = 0; yLayer < 8; ++yLayer)
   {
     shiftOut(dataPinne, clockPinne, MSBFIRST, 0);
@@ -120,6 +100,34 @@ void drawCube()
   PORTB = 0 | (PORTB & B11111110); // latch pin pin
   PORTB = 1 | (PORTB & B11111110); // latch pin pin
 
+  */
+  //z - up, y - in, x - right
+  for (int zLayer = 7; zLayer >= 0; --zLayer)
+  {
+    
+
+
+    //parseSerial();
+    // drive latch low while transmitting
+    //digitalWrite(latchPinne, LOW);
+    
+
+    for (int yLayer = 0; yLayer < 8; ++yLayer)
+    {
+      parseSerial(); // had to do this more often
+      shiftOut(dataPinne, clockPinne, MSBFIRST, pixelData[zLayer][yLayer]); // shift out x
+    }
+    PORTD = (zLayer << 4) | (PORTD & B10001111); //select what layer to show, outputs are matched to demultiplexer.
+    PORTB = 0 | (PORTB & B11111110); // faster way to drive latch pin low
+    PORTB = 1 | (PORTB & B11111110); // latch pin pin
+    
+    //select layer to show
+    //PORTD = 0 | (PORTD & B11110111); // pwm pin
+    
+    //PORTD = (1 << pwmPin) | (PORTD & B11110111); // pwm pin
+  }
+  
+  
 }
 
 //crude wait function, displays current data
